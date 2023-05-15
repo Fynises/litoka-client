@@ -34,7 +34,7 @@ export default function Home() {
           </Box>
           <Box sx={{ width: '40%' }}>
             <Typography variant='h2' color='white' sx={{ paddingTop: 2 }}>
-              The open source twitch streaming suite
+              {`The open source twitch streaming suite ${process.env.NEXT_PUBLIC_CLIENT_ENV_TEST}`}
             </Typography>
             <Card elevation={0} sx={{
               display: 'flex',
