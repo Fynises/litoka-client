@@ -2,14 +2,26 @@
 import * as React from 'react';
 import { Box, Container } from '@mui/system';
 import { Card, CardActionArea, CardContent, CardHeader, Typography } from '@mui/material';
+import { v4 as uuidv4 } from 'uuid';
+import { useRouter } from 'next/navigation';
 
 const secondaryColor = '#006342';
 const topBackgroundColor = '#004A31';
 
 export default function Home() {
 
+  const router = useRouter();
+
   const handleClick = () => {
-    console.log('todo: handleClick');
+    const params = new URLSearchParams({
+      client_id: process.env.NEXT_PUBLIC_CLIENT_ID,
+      redirect_uri: process.env.NEXT_PUBLIC_TWITCH_AUTH_REDIRECT,
+      response_type: 'code',
+      scope: process.env.NEXT_PUBLIC_TWITCH_AUTH_SCOPE,
+      state: uuidv4(),
+    }).toString();
+    console.log(`made url: ${process.env.NEXT_PUBLIC_TWITCH_AUTH_URL + params}`);
+    router.push(process.env.NEXT_PUBLIC_TWITCH_AUTH_URL + params);
   };
 
   return (
