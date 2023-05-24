@@ -6,5 +6,6 @@ declare namespace NodeJS {
     NEXT_PUBLIC_TWITCH_AUTH_URL: string,
     NEXT_PUBLIC_SHOUTOUT_URL: string,
     NEXT_PUBLIC_CLIP_EMBED_PARENT: string,
+    NEXT_PUBLIC_API_HOST: string,
   }
 }

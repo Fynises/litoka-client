@@ -1,7 +1,7 @@
-import axios from 'axios';
-import { authHelper } from '@/auth-util/auth-provider';
+import authHelper from '@/auth-util/auth-helper';
 import { immerable } from 'immer';
 import api from '@/util/api-client';
+import { getHeader } from '@/util/api-util';
 
 interface JsonShoutoutConfig {
   userId: string,
@@ -46,10 +46,6 @@ interface ConfigIdUpdateResponse {
   configId: string,
 }
 
-interface ShoutoutUriBase {
-  uri: string,
-}
-
 interface TestShoutoutRequest {
   tokens: string[],
 }
@@ -75,53 +71,20 @@ export default class ApiShoutoutConfig implements JsonShoutoutConfig {
 
   static async getConfig(): Promise<ApiShoutoutConfig> {
     if (!authHelper.isAuthorized) throw 'not authorized';
-    return api.get<ApiShoutoutConfig>(`${apiBase}get-config`, {
-      headers: authHelper.getAuthHeader()
-    }).then(res => {
-      return res.data;
-    }).catch(err => {
-      if (axios.isAxiosError(err)) {
-        throw err;
-      }
-      throw err;
-    });
+    const res = await api.get<ApiShoutoutConfig>(`${apiBase}get-config`, getHeader());
+    return res.data;
   }
 
   async sendUpdateConfig(): Promise<void> {
     if (!authHelper.isAuthorized) throw 'not authorized';
-    return api.post(`${apiBase}update-config`, this, {
-      headers: authHelper.getAuthHeader()
-    }).then(() => {
-      return;
-    }).catch(err => {
-      if (axios.isAxiosError(err)) {
-        throw err;
-      }
-      throw err;
-    });
+    await api.post(`${apiBase}update-config`, this, getHeader());
   }
 
   async getNewShoutoutId(): Promise<this> {
     if (!authHelper.isAuthorized) throw 'not authorized';
-    return api.patch<ConfigIdUpdateResponse>(`${apiBase}update-id`, null, {
-      headers: authHelper.getAuthHeader(),
-    }).then(res => {
-      this.configId = res.data.configId;
-      return this;
-    }).catch(err => {
-      if (axios.isAxiosError(err)) {
-        throw err;
-      }
-      throw err;
-    });
-  }
-
-  static async getShoutoutUriBase(): Promise<string> {
-    return api.get<ShoutoutUriBase>(`${apiBase}get-base-uri`).then(res => {
-      return res.data.uri;
-    }).catch(err => {
-      throw err;
-    });
+    const res = await api.patch<ConfigIdUpdateResponse>(`${apiBase}update-id`, getHeader());
+    this.configId = res.data.configId;
+    return this;
   }
 
   async sendTestShoutout(message: string): Promise<void> {
@@ -133,13 +96,7 @@ export default class ApiShoutoutConfig implements JsonShoutoutConfig {
       tokens: messageTokens
     };
     console.log(messageTokens);
-    return api.post(`${apiBase}test-shoutout`, requestBody, {
-      headers: authHelper.getAuthHeader(),
-    }).then(() => {
-      return;
-    }).catch(err => {
-      throw err;
-    });
+    await api.post(`${apiBase}test-shoutout`, requestBody, getHeader());
   }
 
 }

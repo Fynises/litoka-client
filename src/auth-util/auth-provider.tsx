@@ -1,24 +1,25 @@
+'use client';
 import * as React from 'react';
 import { useState, useEffect } from 'react';
-import AuthHelper from './auth-helper';
+import authHelper from './auth-helper';
 import { Box, Card } from '@mui/material';
 import { ScaleLoader } from 'react-spinners';
-
-let authHelper: AuthHelper;
 
 type Props = {
   children?: React.ReactNode
 };
 
-export function AuthProvider({ children }: Props) {
+export default function AuthProvider({ children }: Props) {
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    authHelper = new AuthHelper();
     authHelper.validate()
       .then(() => setIsLoading(false))
-      .catch(() => window.location.href = '/');
+      .catch(e => {
+        console.log(`error occurred in auth provider: ${e}`);
+        window.location.href = '/';
+      });
   }, []);
 
   if (isLoading) {
@@ -46,7 +47,3 @@ export function AuthProvider({ children }: Props) {
   }
 
 }
-
-export {
-  authHelper,
-};

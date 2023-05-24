@@ -1,3 +1,4 @@
+'use client';
 import * as React from 'react';
 import { useState, useEffect, Dispatch } from 'react';
 import {
@@ -16,7 +17,7 @@ import {
   Tooltip,
   Typography
 } from '@mui/material';
-import { authHelper } from '@/auth-util/auth-provider';
+import authHelper from '@/auth-util/auth-helper';
 import ApiShoutoutConfig from './api-shoutout-config';
 import BasicPageLoad from '@/util/basic-page-load';
 import produce from 'immer';
@@ -27,7 +28,6 @@ import { DocumentationLink, IconDocLink, TextDocLink } from '@/util/common-compo
 export default function ShoutoutConfig() {
 
   const [shoutoutConfig, setShoutoutConfig] = useState<ApiShoutoutConfig>();
-  const [shoutoutUriBase, setShoutoutUriBase] = useState<string>();
   const [configIsLoading, setConfigIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
@@ -36,16 +36,13 @@ export default function ShoutoutConfig() {
         setShoutoutConfig(new ApiShoutoutConfig(res));
         setConfigIsLoading(false);
       }).catch(err => console.log(err));
-    ApiShoutoutConfig.getShoutoutUriBase()
-      .then(res => setShoutoutUriBase(res))
-      .catch(err => console.log(err));
   }, [configIsLoading]);
 
   if (authHelper.isAuthorized) {
-    if (!configIsLoading && shoutoutConfig !== undefined && shoutoutUriBase !== undefined) {
+    if (!configIsLoading && shoutoutConfig !== undefined) {
       return (
         <>
-          <ShoutoutConfigBody config={shoutoutConfig} shoutoutUriBase={shoutoutUriBase} />
+          <ShoutoutConfigBody config={shoutoutConfig} />
         </>
       );
     } else {
@@ -76,14 +73,13 @@ export default function ShoutoutConfig() {
 
 interface ShoutoutConfigBodyProps {
   config: ApiShoutoutConfig,
-  shoutoutUriBase: string,
 }
 
 function ShoutoutConfigBody(props: ShoutoutConfigBodyProps) {
 
   const [config, setConfig] = useState<ApiShoutoutConfig>(props.config);
   const [shoutoutUri, setShoutoutUri] = useState<string>(
-    `${props.shoutoutUriBase}${props.config.configId}&connectionType=shoutout`
+    `${process.env.NEXT_PUBLIC_SHOUTOUT_URL}${props.config.configId}&connectionType=shoutout`
   );
 
   const handleChangeFilterRange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -113,7 +109,7 @@ function ShoutoutConfigBody(props: ShoutoutConfigBodyProps) {
     config.getNewShoutoutId()
       .then(res => {
         setConfig(res);
-        setShoutoutUri(props.shoutoutUriBase + res.configId);
+        setShoutoutUri(process.env.NEXT_PUBLIC_SHOUTOUT_URL + res.configId);
       }).catch(() => console.log('unknown error occurred'));
   };
 

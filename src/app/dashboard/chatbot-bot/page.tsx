@@ -1,3 +1,4 @@
+'use client';
 import * as React from 'react';
 import { useState } from 'react';
 import { Alert, Box, Button, Paper, Snackbar, ToggleButton, ToggleButtonGroup, Tooltip } from '@mui/material';
@@ -7,7 +8,8 @@ import { ApiDefaultCommands } from './default-commands';
 import { ChatBotContext, ChatBotState } from './chatbot-context';
 import { ApiCustomCommands } from './custom-commands';
 import axios from 'axios';
-import { authHelper } from '@/auth-util/auth-provider';
+import authHelper from '@/auth-util/auth-provider';
+import apiClient from '@/util/api-client';
 import { DocumentationLink } from '@/util/common-components';
 
 type CommandGroup = 'default_commands' | 'custom_commands';
@@ -15,9 +17,7 @@ type CommandGroup = 'default_commands' | 'custom_commands';
 type MEvent = React.MouseEvent<HTMLElement, MouseEvent>;
 
 async function requestForceJoin(): Promise<null> {
-  return axios.post('/api/chat-bot/force-join', null, {
-    headers: authHelper.getAuthHeader(),
-  });
+  return axios.post('/api/chat-bot/force-join', null, apiClient.getHeader());
 }
 
 export default function ChatBotConfig() {

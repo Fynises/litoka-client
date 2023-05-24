@@ -3,7 +3,7 @@ import * as React from 'react';
 import { useState, useEffect } from 'react';
 import { Box, Button, Card, CardHeader, Typography } from '@mui/material';
 import { ScaleLoader } from 'react-spinners';
-import { handleTwitchCallback } from '@/auth-util/api-auth';
+import authHelper from '@/auth-util/auth-helper';
 import { useRouter } from 'next/navigation';
 
 export default function AuthPage() {
@@ -14,10 +14,8 @@ export default function AuthPage() {
 
   useEffect(() => {
     const searchParams: URLSearchParams = new URLSearchParams(document.location.search);
-    handleTwitchCallback(searchParams).then(res => {
-      localStorage.setItem('session_token', res.session_token);
-      localStorage.setItem('user_id', res.user_id);
-      router.push('/dashboard');
+    authHelper.handleTwitchCallback(searchParams).then(() => {
+      router.push('/dashboard/home');
     }).catch(() => {
       setAuthHasFailed(true);
     });

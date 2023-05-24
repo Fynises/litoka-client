@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useState } from 'react';
-import { authHelper } from '../../auth-util/auth-provider';
+import LocalStorageUtil from '@/auth-util/local-storage-util';
+import authHelper from '@/auth-util/auth-helper';
 import {
   Avatar,
   Box,
@@ -58,9 +59,9 @@ export default function UserMenu() {
               alignItems: 'center'
             }}>
               <Typography sx={{ color: 'white', paddingLeft: 1 }}>
-                {authHelper.userName}
+                {getUserName()}
               </Typography>
-              <Avatar src={authHelper.profilePictureUri} />
+              <Avatar src={getProfilePicture()} />
             </Stack>
           </CardActionArea>
         </Card>
@@ -84,4 +85,20 @@ export default function UserMenu() {
     </Box>
   );
 
+}
+
+function getUserName(): string {
+  try {
+    return LocalStorageUtil.get('user_name');
+  } catch (_e) {
+    return 'undefined';
+  }
+}
+
+function getProfilePicture(): string {
+  try {
+    return LocalStorageUtil.get('profile_picture_uri');
+  } catch (_e) {
+    return '';
+  }
 }

@@ -1,102 +1,78 @@
-import axios from 'axios';
+import api from '@/util/api-client';
+import AuthJson from './auth-json';
+import { v4 as uuidv4 } from 'uuid';
+import LocalStorageUtil from './local-storage-util';
+import { getHeader } from '@/util/api-util';
+
+interface LoginResponse {
+  sessionToken: string,
+  userId: string,
+}
 
 interface ApiSessionValidation {
-  is_authorized: boolean,
-  user_id: string,
-  user_name: string,
-  profile_picture_uri: string,
+  isAuthorized: boolean,
+  userId: string,
+  userName: string,
+  profilePictureUri: string,
 }
 
 interface UserDetailResponse {
-  user_name: string,
-  profile_picture_uri: string,
+  userName: string,
+  profilePictureUri: string,
 }
 
-export type AuthHeader = {
-  Authorization: string,
-}
-
-// localstorage keys
-const sessionTokenKey = 'session_token';
-const userNameKey = 'user_name';
-const profilePictureUriKey = 'profile_picture_uri';
-
-export default class AuthHelper {
+class AuthHelper {
 
   isAuthorized: boolean;
-  userName?: string;
-  profilePictureUri?: string;
-  sessionToken: string | null;
 
   constructor() {
     this.isAuthorized = false;
-    this.sessionToken = localStorage.getItem(sessionTokenKey);
-    const userName = localStorage.getItem(userNameKey);
-    this.userName = userName !== null ? userName : undefined;
-    const profilePictureUri = localStorage.getItem(profilePictureUriKey);
-    this.profilePictureUri = profilePictureUri !== null ? profilePictureUri : undefined;
   }
 
-  async logout() {
-    const token = localStorage.getItem(sessionTokenKey);
-    if (token !== null) {
-      console.log(`session token from logout function: ${token}`);
-      axios.post('/auth/logout', null, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-    } else {
-      localStorage.clear();
+  async logout(): Promise<void> {
+    await api.post('/auth/logout', null, getHeader());
+  }
+
+  async validate(): Promise<void> { // return number as if it were a response code
+    try {
+      await api.get<ApiSessionValidation>('/auth/validate', getHeader());
+      this.getUserDetails;
+    } catch (e) {
+      LocalStorageUtil.clear();
     }
   }
 
-  async validate() { // return number as if it were a response code
-    console.log(this.sessionToken);
-    if (this.sessionToken !== null) {
-      return axios.get<ApiSessionValidation>('/auth/validate', {
-        headers: { 'Authorization': `Bearer ${this.sessionToken}` }
-      }).then(res => {
-        this.isAuthorized = true;
-        this.getUserDetails().then(() => {
-          return res;
-        });
-      }).catch(err => {
-        localStorage.clear();
-        throw err;
-      });
+  private async getUserDetails(): Promise<void> {
+    const res = await api.get<UserDetailResponse>('/auth/get-user-details', getHeader());
+    LocalStorageUtil.set('user_name' ,res.data.userName);
+    LocalStorageUtil.set('profile_picture_uri', res.data.profilePictureUri);
+  }
+
+  getAuthUri(): string {
+    const twitchAuthBaseUrl = 'https://id.twitch.tv/oauth2/authorize?';
+    const params = new URLSearchParams({
+      client_id: process.env.NEXT_PUBLIC_CLIENT_ID,
+      redirect_uri: process.env.NEXT_PUBLIC_TWITCH_AUTH_REDIRECT,
+      response_type: 'code',
+      scope: process.env.NEXT_PUBLIC_TWITCH_AUTH_SCOPE,
+      state: uuidv4(),
+    }).toString();
+    return twitchAuthBaseUrl + params;
+  }
+
+  async handleTwitchCallback(params: URLSearchParams): Promise<void> {
+    if (params.has('code')) {
+      const successJson = new AuthJson(params).getSuccessJson();
+      const res = await api.post<LoginResponse>('/auth/login', successJson);
+      LocalStorageUtil.set('session_token', res.data.sessionToken);
+      LocalStorageUtil.set('user_id', res.data.userId);
     } else {
-      localStorage.clear();
-      throw null;
+      throw 'code not found';
     }
-  }
-
-  async getUserDetails() {
-    if (this.sessionToken === null) throw 'unauthorized';
-    if (this.userName !== undefined || this.profilePictureUri !== undefined) return;
-    return axios.get<UserDetailResponse>('/auth/get-user-details', {
-      headers: this.getAuthHeader()
-    }).then(res => {
-      this.setDetails(res.data);
-      return;
-    }).catch(err => {
-      throw err;
-    });
-  }
-
-  private setDetails(data: UserDetailResponse) {
-    localStorage.setItem(userNameKey, data.user_name);
-    localStorage.setItem(profilePictureUriKey, data.profile_picture_uri);
-    this.userName = data.user_name;
-    this.profilePictureUri = data.profile_picture_uri;
-  }
-
-  getAuthHeader(): AuthHeader {
-    let token: string;
-    if (this.sessionToken !== null) {
-      token = this.sessionToken;
-    } else {
-      token = 'err';
-    }
-    return { Authorization: `Bearer ${token}` };
   }
 
 }
+
+const apiHelper = new AuthHelper();
+
+export default apiHelper;
