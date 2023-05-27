@@ -18,7 +18,7 @@ type AuthModel = {
 
 const initialState: AuthModel = {
   isAuthorized: false,
-  sessionToken: localStorage.getItem('session-token'),
+  sessionToken: localStorage.getItem('session_token'),
   userId: null,
   userName: null,
   profilePicture: null
@@ -36,8 +36,9 @@ export const auth = createModel<RootModel>()({
   effects: (dispatch) => ({
     async validate(_payload: null, state): Promise<void> {
       if (state.auth.sessionToken === null) throw 'session-token empty, cannot validate';
+      console.log(`session token in storage: ${state.auth.sessionToken}`);
       const res = await api.get<ValidationResponse>('/auth/validate-login', {
-        headers: { Authorization: state.auth.sessionToken }
+        headers: { Authorization: `Bearer ${state.auth.sessionToken}` }
       });
       dispatch.auth.validationComplete(res.data);
     },

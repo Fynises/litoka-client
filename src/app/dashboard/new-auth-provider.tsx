@@ -20,7 +20,7 @@ export default function NewAuthProvider({ children }: AuthProviderProps) {
       setLoading(false);
     }).catch(e => {
       console.log(`error validating: ${e}`);
-      localStorage.removeItem('session-token');
+      localStorage.removeItem('session_token');
       window.location.href = '/';
     });
   }, [dispatch.auth]);
