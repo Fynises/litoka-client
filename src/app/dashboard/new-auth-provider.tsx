@@ -1,29 +1,43 @@
 'use client';
 import * as React from 'react';
 import { useState, useEffect } from 'react';
-import { Dispatch } from '@/redux-store/store';
-import { useDispatch } from 'react-redux';
+import api from '@/util/authenticated-api-client';
+import { ValidationResponse, validationComplete } from '@/redux-store/models/auth';
+import { useAppDispatch } from '@/redux-store/store';
+import LocalStorageUtil from '@/auth-util/local-storage-util';
 
 type AuthProviderProps = {
   children: React.ReactNode;
 };
 
-export default function NewAuthProvider({ children }: AuthProviderProps) {
+async function validate(): Promise<ValidationResponse> {
+  const res = await api.get<ValidationResponse>('/auth/validate-login');
+  return res.data;
+}
 
-  const dispatch = useDispatch<Dispatch>();
+export default function NewAuthProvider({ children }: AuthProviderProps) {
 
   const [loading, setLoading] = useState<boolean>(true);
 
+  const dispatch = useAppDispatch();
+
+  const onFail = (e: unknown) => {
+    console.log(`error validating: ${e}`);
+    LocalStorageUtil.remove('session_token');
+    window.location.href = '/';
+  };
+
   useEffect(() => {
-    dispatch.auth.validate(null).then(() => {
-      console.log(`sucessfully validated`);
-      setLoading(false);
-    }).catch(e => {
-      console.log(`error validating: ${e}`);
-      localStorage.removeItem('session_token');
-      window.location.href = '/';
-    });
-  }, [dispatch.auth]);
+    if (localStorage.getItem('session_token') !== null) {
+      validate().then(res => {
+        console.log(`sucessfully validated`);
+        dispatch(validationComplete(res));
+        setLoading(false);
+      }).catch(e => onFail(e));
+    } else {
+      onFail('session token not found');
+    }
+  }, [dispatch]);
 
   if (loading) {
     return (<>loading</>);

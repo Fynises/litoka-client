@@ -1,8 +1,7 @@
-import { createModel } from '@rematch/core';
-import { RootModel } from '../root-model';
-import api from '@/util/api-client';
+import LocalStorageUtil from '@/auth-util/local-storage-util';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-type ValidationResponse = {
+export type ValidationResponse = {
   userId: string;
   userName: string;
   profilePicture: string;
@@ -18,29 +17,24 @@ type AuthModel = {
 
 const initialState: AuthModel = {
   isAuthorized: false,
-  sessionToken: localStorage.getItem('session_token'),
+  sessionToken: LocalStorageUtil.getOrNull('session_token'),
   userId: null,
   userName: null,
   profilePicture: null
 };
 
-export const auth = createModel<RootModel>()({
-  state: initialState,
+export const authSlice = createSlice({
+  name: 'auth',
+  initialState,
   reducers: {
-    validationComplete(state, res: ValidationResponse) {
-      state.userId = res.userId;
-      state.userName = res.userName;
-      state.profilePicture = res.profilePicture;
+    validationComplete(state, action: PayloadAction<ValidationResponse>) {
+      state.userId = action.payload.userId;
+      state.userName = action.payload.userName;
+      state.profilePicture = action.payload.profilePicture;
     }
   },
-  effects: (dispatch) => ({
-    async validate(_payload: null, state): Promise<void> {
-      if (state.auth.sessionToken === null) throw 'session-token empty, cannot validate';
-      console.log(`session token in storage: ${state.auth.sessionToken}`);
-      const res = await api.get<ValidationResponse>('/auth/validate-login', {
-        headers: { Authorization: `Bearer ${state.auth.sessionToken}` }
-      });
-      dispatch.auth.validationComplete(res.data);
-    },
-  }),
 });
+
+export const { validationComplete } = authSlice.actions;
+
+export default authSlice.reducer;

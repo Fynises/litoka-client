@@ -1,15 +1,13 @@
-import { RematchDispatch, RematchRootState, init } from '@rematch/core';
-import { models, RootModel } from './root-model';
-import immerPlugin from '@rematch/immer';
+import { configureStore } from '@reduxjs/toolkit';
+import authReducer from './models/auth';
+import { useDispatch } from 'react-redux';
 
-export const store = init<RootModel>({
-  models,
-  plugins: [
-    immerPlugin(),
-  ],
+export const store = configureStore({
+  reducer: {
+    auth: authReducer
+  },
 });
 
-export type Store = typeof store;
-export type Dispatch = RematchDispatch<RootModel>;
-export type RootState = RematchRootState<RootModel>;
-
+export type RootState = ReturnType<typeof store.getState>
+export type AppDispatch = typeof store.dispatch;
+export const useAppDispatch: () => AppDispatch = useDispatch;
