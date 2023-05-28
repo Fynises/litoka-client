@@ -3,7 +3,7 @@ import { immerable } from 'immer';
 import api from '@/util/api-client';
 import { getHeader } from '@/util/api-util';
 
-interface JsonShoutoutConfig {
+export interface JsonShoutoutConfig {
   userId: string,
   configId: string,
   settings: ShoutoutSettings,

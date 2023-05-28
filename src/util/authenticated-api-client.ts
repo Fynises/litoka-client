@@ -2,7 +2,7 @@ import LocalStorageUtil from '@/auth-util/local-storage-util';
 import axios from 'axios';
 import { AxiosResponse, InternalAxiosRequestConfig, AxiosInstance } from 'axios';
 import camelcaseKeys from 'camelcase-keys';
-import snakecaseKeys from 'snakecase-keys';
+import { snakeize } from './snake-case-transformer';
 
 function buildClient(): AxiosInstance {
   const api = axios.create({
@@ -23,11 +23,11 @@ function buildClient(): AxiosInstance {
     }
 
     if (config.params) {
-      newConfig.params = snakecaseKeys(config.params);
+      newConfig.params = snakeize(config.params);
     }
 
     if (config.data) {
-      newConfig.data = snakecaseKeys(config.data);
+      newConfig.data = snakeize(config.data);
     }
     return newConfig;
   });
