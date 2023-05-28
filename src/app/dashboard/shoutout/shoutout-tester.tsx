@@ -3,6 +3,7 @@ import * as React from 'react';
 import { useState } from 'react';
 import { Box, Button, TextField } from '@mui/material';
 import api from '@/util/authenticated-api-client';
+import { useSnackbar } from 'notistack';
 
 type TestShououtRequest = {
   tokens: string[]
@@ -18,7 +19,10 @@ async function sendTestShoutout(target: string): Promise<void> {
 }
 
 export default function ShoutoutTester() {
+
   const [body, setBody] = useState<string>('');
+
+  const { enqueueSnackbar } = useSnackbar();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setBody(e.target.value);
@@ -26,8 +30,8 @@ export default function ShoutoutTester() {
 
   const handleSubmit = () => {
     sendTestShoutout(body)
-      .then(() => console.log(''))
-      .catch(() => console.log(''));
+      .then(() => enqueueSnackbar('Successfully sent test shoutout', { variant: 'success' }))
+      .catch(() => enqueueSnackbar('Error sending test shoutout', { variant: 'error' }));
   };
 
   return (

@@ -23,11 +23,13 @@ import MillisecondSelector from './millisecond-selector';
 import ShoutoutTester from './shoutout-tester';
 import { getNewShoutoutId, sendUpdateConfigV2 } from './new-config-api';
 import { setConfigField, update } from '@/redux-store/models/shoutout-config';
+import { useSnackbar } from 'notistack';
 
 export function ShoutoutConfigBody() {
 
   const selector = useSelector((state: RootState) => state.shoutoutConfig);
   const dispatch = useAppDispatch();
+  const { enqueueSnackbar } = useSnackbar();
 
   const [shoutoutUri, setShoutoutUri] = useState<string>(
     `${process.env.NEXT_PUBLIC_SHOUTOUT_URL}${selector.data?.configId}&connectionType=shoutout`
@@ -53,8 +55,14 @@ export function ShoutoutConfigBody() {
   const updateConfig = () => {
     if (selector.data !== null) {
       sendUpdateConfigV2({ changes: selector.changes })
-        .then(() => dispatch(update()))
-        .catch(e => console.log(`error updating config: ${e}`));
+        .then(() => {
+          dispatch(update());
+          enqueueSnackbar('Successfully updated config', { variant: 'success' });
+        })
+        .catch(e => {
+          console.log(`error updating config: ${e}`);
+          enqueueSnackbar('error updating config', { variant: 'error' });
+        });
     } else {
       console.log('config has not been initialised');
     }

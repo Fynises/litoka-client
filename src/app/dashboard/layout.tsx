@@ -23,6 +23,7 @@ import BasicPageLoad from './basic-page-load';
 import { Provider } from 'react-redux';
 import { store } from '@/redux-store/store';
 import NewAuthProvider from './new-auth-provider';
+import { SnackbarProvider } from 'notistack';
 
 const drawerWidth = 240;
 
@@ -82,9 +83,11 @@ export default function Menu({ children }: DashboardLayoutProps) {
   return (
     <Provider store={store}>
       <NewAuthProvider>
-        <MenuBody>
-          {children}
-        </MenuBody>
+        <SnackbarProvider>
+          <MenuBody>
+            {children}
+          </MenuBody>
+        </SnackbarProvider>
       </NewAuthProvider>
     </Provider>
   );
