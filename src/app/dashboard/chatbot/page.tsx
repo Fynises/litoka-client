@@ -4,34 +4,16 @@ import { useState } from 'react';
 import { Alert, Box, Button, Paper, Snackbar, ToggleButton, ToggleButtonGroup, Tooltip } from '@mui/material';
 import DefaultCommandConfig from './default-command-config';
 import CustomCommandConfig from './custom-command-config';
-import { ApiDefaultCommands } from './default-commands';
-import { ChatBotContext, ChatBotState } from './chatbot-context';
-import { ApiCustomCommands } from './custom-commands';
-import axios from 'axios';
-import authHelper from '@/auth-util/auth-provider';
-import apiClient from '@/util/api-client';
 import { DocumentationLink } from '@/util/common-components';
+import SubmitUpdateButton from './submit-update-button';
 
 type CommandGroup = 'default_commands' | 'custom_commands';
 
 type MEvent = React.MouseEvent<HTMLElement, MouseEvent>;
 
-async function requestForceJoin(): Promise<null> {
-  return axios.post('/api/chat-bot/force-join', null, apiClient.getHeader());
-}
-
 export default function ChatBotConfig() {
 
   const [commandGroup, setCommandGroup] = useState<CommandGroup>('default_commands');
-  const [defaultCommands, setDefaultCommands] = useState<ApiDefaultCommands>();
-  const [customCommands, setCustomCommands] = useState<ApiCustomCommands>();
-
-  const context: ChatBotState = {
-    defaultCommands: defaultCommands,
-    setDefaultCommands: setDefaultCommands,
-    customCommands: customCommands,
-    setCustomCommands: setCustomCommands,
-  };
 
   const handleChange = (_e: MEvent, val: string) => {
     setCommandGroup(val as CommandGroup);
@@ -58,11 +40,10 @@ export default function ChatBotConfig() {
       <Box sx={{ display: 'flex', }}>
         <DocumentationLink path='/docs/category/chat-bot' text='documentation' />
         <ForceJoinButton />
+        <SubmitUpdateButton />
       </Box>
     </Paper>
-    <ChatBotContext.Provider value={context}>
-      <GroupDisplay commandGroup={commandGroup} />
-    </ChatBotContext.Provider>
+    <GroupDisplay commandGroup={commandGroup} />
   </>);
 
 }
@@ -95,6 +76,8 @@ function ForceJoinButton() {
   const [errorCode, setErrorCode] = useState<string>('');
 
   const handleForceJoin = () => {
+    // TODO:
+    /*
     requestForceJoin()
       .then(() => setSuccessOpen(true))
       .catch(e => {
@@ -106,6 +89,7 @@ function ForceJoinButton() {
           setErrorOpen(true);
         }
       });
+      */
   };
 
   const handleErrorClose = () => {
