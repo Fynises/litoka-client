@@ -17,7 +17,7 @@ type AuthModel = {
 
 const initialState: AuthModel = {
   isAuthorized: false,
-  sessionToken: LocalStorageUtil.getOrNull('session_token'),
+  sessionToken: LocalStorageUtil.getOrNull('jwt'),
   userId: null,
   userName: null,
   profilePicture: null

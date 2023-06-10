@@ -1,11 +1,12 @@
 'use client';
 import * as React from 'react';
 import { useState } from 'react';
-import { Alert, Box, Button, Paper, Snackbar, ToggleButton, ToggleButtonGroup, Tooltip } from '@mui/material';
+import { Box, Paper, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import DefaultCommandConfig from './default-command-config';
 import CustomCommandConfig from './custom-command-config';
 import { DocumentationLink } from '@/util/common-components';
 import SubmitUpdateButton from './submit-update-button';
+import ForceJoinButton from './force-join-button';
 
 type CommandGroup = 'default_commands' | 'custom_commands';
 
@@ -67,56 +68,4 @@ function GroupDisplay(props: GroupDisplayProps) {
         </Box>
       );
   }
-}
-
-function ForceJoinButton() {
-
-  const [successOpen, setSuccessOpen] = useState<boolean>(false);
-  const [errorOpen, setErrorOpen] = useState<boolean>(false);
-  const [errorCode, setErrorCode] = useState<string>('');
-
-  const handleForceJoin = () => {
-    // TODO:
-    /*
-    requestForceJoin()
-      .then(() => setSuccessOpen(true))
-      .catch(e => {
-        if (axios.isAxiosError(e)) {
-          setErrorCode(`${e.code}`);
-          setErrorOpen(true);
-        } else {
-          setErrorCode('unknown error');
-          setErrorOpen(true);
-        }
-      });
-      */
-  };
-
-  const handleErrorClose = () => {
-    setErrorOpen(false);
-    setErrorCode('');
-  };
-
-  return (
-    <>
-      <Tooltip title='request bot to join your channel'>
-        <Button variant='contained' disableElevation={true} size='small' onClick={handleForceJoin} sx={{
-          borderRadius: 4,
-          marginRight: 2
-        }}>
-          join channel
-        </Button>
-      </Tooltip>
-      <Snackbar open={successOpen} autoHideDuration={6000} onClose={() => setSuccessOpen(false)}>
-        <Alert variant='filled' onClose={() => setSuccessOpen(false)} severity='success'>
-          Successfully sent request
-        </Alert>
-      </Snackbar>
-      <Snackbar open={errorOpen} autoHideDuration={6000} onClose={handleErrorClose}>
-        <Alert variant='filled' onClose={handleErrorClose} severity='success'>
-          Error sending request: {errorCode}
-        </Alert>
-      </Snackbar>
-    </>
-  );
 }

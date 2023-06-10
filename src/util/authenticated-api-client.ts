@@ -32,7 +32,7 @@ function buildClient(): AxiosInstance {
     return newConfig;
   });
 
-  api.defaults.headers.common['Authorization'] = `Bearer ${LocalStorageUtil.getOrNull('session_token')}`;
+  api.defaults.headers.common['Authorization'] = `Bearer ${LocalStorageUtil.getOrNull('jwt')}`;
 
   return api;
 }

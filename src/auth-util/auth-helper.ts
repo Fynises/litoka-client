@@ -4,11 +4,6 @@ import { v4 as uuidv4 } from 'uuid';
 import LocalStorageUtil from './local-storage-util';
 import { getHeader } from '@/util/api-util';
 
-interface LoginResponse {
-  sessionToken: string,
-  userId: string,
-}
-
 interface ApiSessionValidation {
   isAuthorized: boolean,
   userId: string,
@@ -63,9 +58,8 @@ class AuthHelper {
   async handleTwitchCallback(params: URLSearchParams): Promise<void> {
     if (params.has('code')) {
       const successJson = new AuthJson(params).getSuccessJson();
-      const res = await api.post<LoginResponse>('/auth/login', successJson);
-      LocalStorageUtil.set('session_token', res.data.sessionToken);
-      LocalStorageUtil.set('user_id', res.data.userId);
+      const res = await api.post<string>('/auth/login', successJson);
+      LocalStorageUtil.set('jwt', res.data);
     } else {
       throw 'code not found';
     }

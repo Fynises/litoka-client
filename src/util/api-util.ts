@@ -11,7 +11,7 @@ type ApiHeaders = {
 export function getHeader(): ApiHeaders {
   return {
     headers: {
-      Authorization: `Bearer ${LocalStorageUtil.get('session_token')}`
+      Authorization: `Bearer ${LocalStorageUtil.get('jwt')}`
     }
   };
 }

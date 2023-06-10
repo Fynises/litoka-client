@@ -23,12 +23,12 @@ export default function NewAuthProvider({ children }: AuthProviderProps) {
 
   const onFail = (e: unknown) => {
     console.log(`error validating: ${e}`);
-    LocalStorageUtil.remove('session_token');
+    LocalStorageUtil.remove('jwt');
     window.location.href = '/';
   };
 
   useEffect(() => {
-    if (localStorage.getItem('session_token') !== null) {
+    if (localStorage.getItem('jwt') !== null) {
       validate().then(res => {
         console.log(`sucessfully validated`);
         dispatch(validationComplete(res));
