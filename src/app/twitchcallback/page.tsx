@@ -3,8 +3,15 @@ import * as React from 'react';
 import { useState, useEffect } from 'react';
 import { Box, Button, Card, CardHeader, Typography } from '@mui/material';
 import { ScaleLoader } from 'react-spinners';
-import authHelper from '@/auth-util/auth-helper';
 import { useRouter } from 'next/navigation';
+import api from '@/util/api-client';
+import AuthUrlParams from './auth-url-params';
+import LocalStorageUtil from '@/auth-util/local-storage-util';
+
+async function handleTwitchCallback(params: AuthUrlParams): Promise<string> {
+  const res = await api.post<string>('/auth/login', params);
+  return res.data;
+}
 
 export default function AuthPage() {
 
@@ -13,8 +20,10 @@ export default function AuthPage() {
   const [authHasFailed, setAuthHasFailed] = useState<boolean>(false);
 
   useEffect(() => {
-    const searchParams: URLSearchParams = new URLSearchParams(document.location.search);
-    authHelper.handleTwitchCallback(searchParams).then(() => {
+    const searchParams = new URLSearchParams(document.location.search);
+    const parsedParams = new AuthUrlParams(searchParams);
+    handleTwitchCallback(parsedParams).then(token => {
+      LocalStorageUtil.set('jwt', token);
       router.push('/dashboard/home');
     }).catch(() => {
       setAuthHasFailed(true);

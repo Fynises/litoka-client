@@ -2,7 +2,6 @@ import LocalStorageUtil from '@/auth-util/local-storage-util';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export type ValidationResponse = {
-  userId: string;
   userName: string;
   profilePicture: string;
 }
@@ -28,7 +27,6 @@ export const authSlice = createSlice({
   initialState,
   reducers: {
     validationComplete(state, action: PayloadAction<ValidationResponse>) {
-      state.userId = action.payload.userId;
       state.userName = action.payload.userName;
       state.profilePicture = action.payload.profilePicture;
     }

@@ -1,7 +1,6 @@
 'use client';
 import * as React from 'react';
 import { useState } from 'react';
-import authHelper from '@/auth-util/auth-helper';
 import {
   Avatar,
   Box,
@@ -39,10 +38,8 @@ export default function UserMenu() {
         console.log('todo');
         break;
       case 'logout':
-        authHelper.logout().then(() => {
-          localStorage.clear();
-          window.location.href = '/';
-        });
+        localStorage.clear();
+        window.location.href = '/';
     }
     setUserOptionsMenu(null);
   };
