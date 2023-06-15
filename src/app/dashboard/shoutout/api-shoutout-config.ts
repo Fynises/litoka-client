@@ -1,7 +1,5 @@
-import authHelper from '@/auth-util/auth-helper';
 import { immerable } from 'immer';
-import api from '@/util/api-client';
-import { getHeader } from '@/util/api-util';
+import api from '@/util/authenticated-api-client';
 
 export interface JsonShoutoutConfig {
   userId: string,
@@ -36,7 +34,7 @@ interface ShoutoutFilterConfig {
 interface ShoutoutOverrideConfig {
   clip: boolean,             // -c
   clipMuted: boolean,        // -cm
-  cliupUnmuted: boolean,     // -cu
+  clipUnmuted: boolean,      // -cu
   nameOnly: boolean,         // -n
   messageOnly: boolean,      // -m
   directClip: boolean,       // -d
@@ -70,19 +68,16 @@ export default class ApiShoutoutConfig implements JsonShoutoutConfig {
   }
 
   static async getConfig(): Promise<ApiShoutoutConfig> {
-    if (!authHelper.isAuthorized) throw 'not authorized';
-    const res = await api.get<ApiShoutoutConfig>(`${apiBase}get-config`, getHeader());
+    const res = await api.get<ApiShoutoutConfig>(`${apiBase}get-config`);
     return res.data;
   }
 
   async sendUpdateConfig(): Promise<void> {
-    if (!authHelper.isAuthorized) throw 'not authorized';
-    await api.post(`${apiBase}update-config`, this, getHeader());
+    await api.post(`${apiBase}update-config`, this);
   }
 
   async getNewShoutoutId(): Promise<this> {
-    if (!authHelper.isAuthorized) throw 'not authorized';
-    const res = await api.patch<ConfigIdUpdateResponse>(`${apiBase}update-id`, getHeader());
+    const res = await api.patch<ConfigIdUpdateResponse>(`${apiBase}update-id`);
     this.configId = res.data.configId;
     return this;
   }
@@ -96,7 +91,7 @@ export default class ApiShoutoutConfig implements JsonShoutoutConfig {
       tokens: messageTokens
     };
     console.log(messageTokens);
-    await api.post(`${apiBase}test-shoutout`, requestBody, getHeader());
+    await api.post(`${apiBase}test-shoutout`, requestBody);
   }
 
 }

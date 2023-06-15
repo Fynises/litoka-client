@@ -32,7 +32,7 @@ export function ShoutoutConfigBody() {
   const { enqueueSnackbar } = useSnackbar();
 
   const [shoutoutUri, setShoutoutUri] = useState<string>(
-    `${process.env.NEXT_PUBLIC_SHOUTOUT_URL}${selector.data?.configId}&connectionType=shoutout`
+    `${process.env.NEXT_PUBLIC_SHOUTOUT_URL}?id=${selector.data?.configId}`
   );
 
   const handleChangeFilterRange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
