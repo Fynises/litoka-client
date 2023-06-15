@@ -1,7 +1,6 @@
+'use client';
 import * as React from 'react';
 import { useState } from 'react';
-import LocalStorageUtil from '@/auth-util/local-storage-util';
-import authHelper from '@/auth-util/auth-helper';
 import {
   Avatar,
   Box,
@@ -16,8 +15,12 @@ import {
   useTheme
 } from '@mui/material';
 import { Settings, Logout } from '@mui/icons-material';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/redux-store/store';
 
 export default function UserMenu() {
+
+  const authState = useSelector((state: RootState) => state.auth);
 
   const theme = useTheme();
 
@@ -35,10 +38,8 @@ export default function UserMenu() {
         console.log('todo');
         break;
       case 'logout':
-        authHelper.logout().then(() => {
-          localStorage.clear();
-          window.location.href = '/';
-        });
+        localStorage.clear();
+        window.location.href = '/';
     }
     setUserOptionsMenu(null);
   };
@@ -59,9 +60,9 @@ export default function UserMenu() {
               alignItems: 'center'
             }}>
               <Typography sx={{ color: 'white', paddingLeft: 1 }}>
-                {getUserName()}
+                {getOrUndefined(authState.userName)}
               </Typography>
-              <Avatar src={getProfilePicture()} />
+              <Avatar src={getOrUndefined(authState.profilePicture)} />
             </Stack>
           </CardActionArea>
         </Card>
@@ -87,18 +88,7 @@ export default function UserMenu() {
 
 }
 
-function getUserName(): string {
-  try {
-    return LocalStorageUtil.get('user_name');
-  } catch (_e) {
-    return 'undefined';
-  }
-}
-
-function getProfilePicture(): string {
-  try {
-    return LocalStorageUtil.get('profile_picture_uri');
-  } catch (_e) {
-    return '';
-  }
+function getOrUndefined(val: string | null): string | undefined {
+  if (val === null) return undefined;
+  return val;
 }

@@ -25,7 +25,7 @@ export default function MenuList() {
         />
         <MenuListItem
           title='Chat Bot'
-          route='/dashboard/chat-bot'
+          route='/dashboard/chatbot'
           icon={<ChatIcon />}
         />
         <MenuListItem
