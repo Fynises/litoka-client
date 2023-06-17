@@ -5,14 +5,14 @@ import { Box, Button, TextField } from '@mui/material';
 import api from '@/util/authenticated-api-client';
 import { useSnackbar } from 'notistack';
 
-type TestShououtRequest = {
+type TestShoutoutRequest = {
   tokens: string[]
 };
 
 async function sendTestShoutout(target: string): Promise<void> {
   let targetTokens: string[] = ['!so'];
-  targetTokens = targetTokens.concat(target.split(''));
-  const reqBody: TestShououtRequest = {
+  targetTokens = targetTokens.concat(target.split(' '));
+  const reqBody: TestShoutoutRequest = {
     tokens: targetTokens
   };
   await api.post(`/api/shoutout-config/test-shoutout`, reqBody);
