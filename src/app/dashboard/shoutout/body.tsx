@@ -70,8 +70,14 @@ export function ShoutoutConfigBody() {
 
   const getNewUri = () => {
     getNewShoutoutId()
-      .then(res => setShoutoutUri(process.env.NEXT_PUBLIC_SHOUTOUT_URL + res))
-      .catch(e => console.log(`error occurred updating shoutout uri: ${e}`));
+      .then(res => {
+        setShoutoutUri(process.env.NEXT_PUBLIC_SHOUTOUT_URL + res);
+        enqueueSnackbar('successfully updated id', { variant: 'success' });
+      })
+      .catch(e => {
+        console.log(`error occurred updating shoutout uri: ${e}`);
+        enqueueSnackbar('failed to update id', { variant: 'error' });
+      });
   };
 
   return (
@@ -120,7 +126,6 @@ export function ShoutoutConfigBody() {
             <Button variant='contained' disableElevation={true} size='small' onClick={getNewUri} sx={{
               marginLeft: 1,
               borderRadius: 4,
-              fontFamily: 'Roboto'
             }}>
               Get new link
             </Button>
