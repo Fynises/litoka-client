@@ -15,7 +15,10 @@ const websocketUrlBase = process.env.NEXT_PUBLIC_SHOUTOUT_WS_URL;
 
 export default function Player(props: PlayerProps) {
 
+  const websocketUrl = `${websocketUrlBase}?id=${props.id}`;
+
   const shoutoutObjects = useRef(new ShoutoutQueue());
+  const websocketClient = useRef<WebSocket | null>(null);
   const [currentSo, setCurrentSo] = useState<ShoutoutWrapper | null>(null);
 
   const addFromNew = useCallback((shoutout: ShoutoutWrapper) => {
@@ -27,8 +30,15 @@ export default function Player(props: PlayerProps) {
   }, [currentSo]);
 
   useEffect(() => {
-    const websocket = new WebSocket(`${websocketUrlBase}?id=${props.id}`);
-    websocket.onmessage = (data: WebSocket.MessageEvent) => {
+    console.log('making new websocket connection');
+    websocketClient.current = new WebSocket(websocketUrl);
+    return () => {
+      websocketClient.current.close();
+    };
+  }, [websocketUrl]);
+
+  useEffect(() => {
+    websocketClient.current.onmessage = (data: WebSocket.MessageEvent) => {
       try {
         const shoutout = ShoutoutObject.makeObjectWithId(data.data.toString());
         console.log(`received data from websocket connection: ${data.data.toString()}`);
@@ -36,9 +46,6 @@ export default function Player(props: PlayerProps) {
       } catch (e) {
         console.log('error occurred after receiving websocket');
       }
-    };
-    return () => {
-      websocket.close();
     };
   }, [addFromNew, props.id]);
 
