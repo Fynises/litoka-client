@@ -2,6 +2,7 @@
 import * as React from 'react';
 import { ShoutoutWrapper } from './shoutout-queue';
 import { Box, Typography, alpha } from '@mui/material';
+import Image from 'next/image';
 
 interface NameProps {
   so: ShoutoutWrapper
@@ -31,7 +32,12 @@ export default function NamePlayer(props: NameProps) {
       }}>
         Check out {props.so.shoutout.channelName}
       </Typography>
-      <img src={props.so.shoutout.channelProfile} width={128} height={128} style={{ marginTop: 4, marginBottom: 4 }} />
+      <Image src={props.so.shoutout.channelProfile}
+        width={128}
+        height={128}
+        style={{ marginTop: 4, marginBottom: 4 }}
+        alt=''
+      />
     </Box>
   );
 }

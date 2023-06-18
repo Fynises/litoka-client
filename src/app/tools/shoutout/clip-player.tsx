@@ -3,6 +3,7 @@ import * as React from 'react';
 import { useEffect } from 'react';
 import { ShoutoutWrapper } from './shoutout-queue';
 import { Box, Typography, alpha } from '@mui/material';
+import Image from 'next/image';
 
 interface ClipPlayerProps {
   so: ShoutoutWrapper,
@@ -42,7 +43,7 @@ export default function ClipPlayer(props: ClipPlayerProps) {
         }}>
           Check out {props.so.shoutout.channelName}
         </Typography>
-        <img src={props.so.shoutout.channelProfile} width={128} height={128} />
+        <Image src={props.so.shoutout.channelProfile} width={128} height={128} alt='' />
       </Box>
       <Box>
         <iframe
