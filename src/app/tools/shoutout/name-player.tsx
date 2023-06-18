@@ -1,4 +1,4 @@
-'use clip';
+'use client';
 import * as React from 'react';
 import { ShoutoutWrapper } from './shoutout-queue';
 import { Box, Typography, alpha } from '@mui/material';
